@@ -21,7 +21,7 @@ export default defineComponent({
   name: 'HomeView',
   methods: {
     routerToChat () {
-      this.$router.push('/conversation')
+      this.$router.push('/conversation').catch((err) => { console.log('err', err) })
     }
   }
 })
@@ -47,7 +47,7 @@ export default defineComponent({
 .footer {
   height: 1rem;
   width: 80%;
-  margin-bottom: 0.2rem;
+  margin-bottom: 0.6rem;
   border-radius: 0.5rem;
   // background: #409EFF
   background: linear-gradient(to right, #2193b0, #6dd5ed)

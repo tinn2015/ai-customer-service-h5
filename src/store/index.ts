@@ -14,6 +14,7 @@ export default createStore({
   actions: {
     setWordsId (context, wordsId) {
       context.commit('setWordsId', wordsId)
+      localStorage.setItem('wordsId', wordsId)
     }
   },
   modules: {

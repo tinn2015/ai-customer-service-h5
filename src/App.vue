@@ -1,12 +1,8 @@
 <template>
-  <!-- <nav>
-    <router-link to="/">Home</router-link> |
-    <router-link to="/about">About</router-link>
-  </nav> -->
   <div class="container flex fd-c">
     <header class="flex jc-sb header">
-      <div class="ft30">话术名称：xx</div>
-      <div class="ft30">已测xx次</div>
+      <div class="ft30">话术名称：{{wordsName}}</div>
+      <div class="ft30">已测 {{testTimes}} 次</div>
     </header>
     <router-view class="flex flex-1" />
   </div>
@@ -19,13 +15,18 @@ import { getCount } from './utils/http'
 export default defineComponent({
   data () {
     return {
-      testTimes: 0
+      testTimes: 0,
+      wordsName: '' as null | string
     }
   },
-  beforeCreate () {
-    this.$store.dispatch('setWordsId', '1111')
-    getCount('111').then(res => {
-      this.testTimes = res.data
+  mounted () {
+    this.$nextTick(() => {
+      this.wordsName = this.$route.query.name as string
+      console.log('setWordsId', this.$route.query, this.wordsName, this.$route)
+      this.$store.dispatch('setWordsId', Number(this.$route.query.id))
+      getCount(this.$store.state.wordsId).then(res => {
+        this.testTimes = res.data
+      })
     })
   }
 })

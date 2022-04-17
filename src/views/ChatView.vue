@@ -18,12 +18,16 @@
         </div>
       </div>
     </div>
-    <div class="handle-bar flex ft30">
-      <div class="btn">重置</div>
-      <div class="btn">清空聊天窗口</div>
-      <div class="btn">结束对话</div>
+    <div class="handle-bar flex ft30" v-if="!reStart">
+      <div class="btn" @click="reset()">重置</div>
+      <div class="btn" @click="clearChat()">清空聊天窗口</div>
+      <div class="btn" @click="stopChat()">结束对话</div>
     </div>
-    <div class="footer ft30 flex jc-c ai-c">
+    <div class="score"></div>
+    <div v-if="reStart" class="footer ft30 flex jc-c ai-c">
+      <div class="re-start c-fff flex jc-c ai-c" @click="routerToHome()">重新开始</div>
+    </div>
+    <div v-else class="footer ft30 flex jc-c ai-c">
       <!-- <el-input class="ft30" v-model="chatMsg" placeholder="请输入内容"></el-input> -->
       <div contenteditable  class="input flex-1 flex ai-c ft30" :placeholder="placeholderVisible ? placeholder : ''" ref="input" @keyup="checkMsg()"></div>
       <div class="send c-fff ft30 flex jc-c ai-c" @click="send()">发送</div>
@@ -48,18 +52,14 @@ export default defineComponent({
       chatList: [] as ChatItem[],
       chatMsg: '',
       placeholder: '请输入内容',
-      placeholderVisible: false
+      placeholderVisible: false,
+      wordsId: 0 as number,
+      reStart: false
     }
   },
   mounted () {
-    create(this.$store.state.wordsId).then(res => {
-      console.log(res)
-      this.chatList.push({
-        role: 'robot',
-        content: res.data.content,
-        type: 'chat'
-      })
-    })
+    this.wordsId = Number(localStorage.getItem('wordsId'))
+    this.createChat()
   },
   methods: {
     send () {
@@ -95,6 +95,44 @@ export default defineComponent({
       } else {
         this.placeholderVisible = false
       }
+    },
+    createChat () {
+      create(this.wordsId).then(res => {
+        console.log('createChat1', res)
+        this.chatList.push({
+          role: 'robot',
+          content: res.data.content,
+          type: 'chat'
+        })
+      })
+    },
+    clearChat () {
+      this.chatList = []
+    },
+    reset () {
+      this.clearChat()
+      this.createChat()
+    },
+    stopChat () {
+      this.reStart = true
+      this.chatList.push({
+        role: 'self',
+        type: 'chat',
+        content: '结束对话'
+      })
+      // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+      // @ts-ignore
+      this.$refs.$content.scrollTop = this.$refs.$content.scrollHeight
+      setTimeout(() => {
+        this.chatList.push({
+          role: 'robot',
+          type: 'chat',
+          content: '好的，我们下次再见！'
+        })
+      }, 800)
+    },
+    routerToHome () {
+      this.$router.push('/')
     }
   }
 })
@@ -187,9 +225,9 @@ export default defineComponent({
 }
 .footer {
   // height: 1.2rem;
-  padding: 0.2rem 0.2rem;
+  padding: 0.4rem 0.2rem;
   background: #eeeeee;
-  border-top: 0.01rem solid #d9d9d9;
+  border-top: 0.01rem solid #cccccc;
   .input {
     background: #fff;
     border-radius: 0.16rem;
@@ -215,6 +253,12 @@ export default defineComponent({
     background: #2193b0;
     // background: linear-gradient(to right, #2193b0, #6dd5ed);
     border-radius: 0.3rem
+  }
+  .re-start {
+     background: #2193b0;
+     height: 0.6rem;
+     border-radius: 0.3rem;
+     padding: 0.2rem 0.25rem
   }
 }
 

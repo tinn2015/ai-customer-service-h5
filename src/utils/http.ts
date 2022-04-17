@@ -1,7 +1,7 @@
 import axios from 'axios'
 
 const instance = axios.create({
-  baseURL: 'https://some-domain.com/api/',
+  baseURL: 'http://172.16.1.99',
   transformResponse: [(data) => {
     return data
   }]
@@ -33,13 +33,13 @@ export interface CreateType {
   data: Record<string, unknown>
 }
 
-export const create = (wordsId: string) => {
-  // return instance.post(URLS.create, wordsId)
-  return mock('create')
+export const create = (wordsId: number) => {
+  return instance.post(URLS.create, { wordsId })
+  // return mock('create')
 }
 
-export const getCount = (wordsId: string) => {
-  return instance.post(URLS.getCount, wordsId)
+export const getCount = (wordsId: number) => {
+  return instance.post(URLS.getCount, { wordsId })
 }
 
 export const getContent = (options: Record<string, unknown>) => {
